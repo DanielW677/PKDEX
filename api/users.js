@@ -2,12 +2,13 @@ const express = require('express')
 const usersRouter = express.Router();
 const {
     createUser,
-    getUserByUsername
+    getUserByUsername,
+    getUserById
 } = require('../db/users')
 
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-
+const {reqUser, reqAdmin} = require('./utils')
 
 usersRouter.post('/register', async (req, res, next) => {
     const {username, password} = req.body
@@ -69,6 +70,17 @@ usersRouter.post('/login', async (req, res, next)=> {
                 message: "Username or password is incorrect"
             })
         }
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+usersRouter.get('/me', reqUser, async (req, res, next) => {
+    const userId = req.user.id
+    try {
+        const user = await getUserById(userId)
+        res.send(user)
+        console.log(user)
     } catch (error) {
         console.log(error)
     }
