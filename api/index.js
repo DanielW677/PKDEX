@@ -42,4 +42,8 @@ router.use(async (req, res, next) => {
   const usersRouter = require('./users')
   router.use('/users', usersRouter)
   
+
+  const monRouter = require('./pokemon')
+  router.use('/pokemon', monRouter)
+  
   module.exports = router
