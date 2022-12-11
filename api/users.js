@@ -33,6 +33,7 @@ usersRouter.post('/register', async (req, res, next) => {
         process.env.JWT_SECRET, {
             expiresIn: "1W"
         })
+        delete user.password
         res.send({
             user,
             message: "Gotta Catch em all!",
