@@ -9,6 +9,7 @@ const {
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const {reqUser, reqAdmin} = require('./utils')
+const {JWT_SECRET} = process.env
 
 usersRouter.post('/register', async (req, res, next) => {
     const {username, password} = req.body
@@ -48,26 +49,30 @@ usersRouter.post('/login', async (req, res, next)=> {
     const {username, password} = req.body
     if(!username || !password){
         next({
-            name: "MissingCredsError",
-            message: "Missing either username or password"
+            name: "MissingInfoError",
+            message: "Need both a username and password to login"
         })
     }
-
     try {
         const user = await getUserByUsername(username)
-        const hashWord = user.password
-        const isValid = await bcrypt.compare(password, hashWord)
-        if(user && isValid){
-            const token = jwt.sign({id: user.id,
-            username: username,   
-        }, process.env.JWT_SECRET, {
-            expiresIn: "1w"
-        })
-        res.send({message: `Thanks for logging in ${username}`, token:token})
+        console.log(user)
+        if(!user){
+          res.send({
+            name: "LL",
+            message: "This user dosent exist"
+          })
+        }
+        // console.log('this is user', user)
+        const rPassword = await bcrypt.compare(password, user.password)
+        // console.log('this is rPa', rPassword)
+        if(user && rPassword){
+            const token = jwt.sign( { id: user.id, username: user.username}, JWT_SECRET)
+            delete user.password
+            res.send({message: 'Get ready to catch em all!', token: token, user})
         }else{
             next({
-                name: "InvalidCredsError",
-                message: "Username or password is incorrect"
+                name: "IncorrectInfo",
+                message: 'Username or password is wrong'
             })
         }
     } catch (error) {
@@ -79,7 +84,12 @@ usersRouter.get('/me', reqUser, async (req, res, next) => {
     const userId = req.user.id
     try {
         const user = await getUserById(userId)
-        res.send(user)
+        if(user){
+            delete user.password
+            res.send(user)
+        }else{
+            res.send('FAILED')
+        }
         console.log(user)
     } catch (error) {
         console.log(error)
