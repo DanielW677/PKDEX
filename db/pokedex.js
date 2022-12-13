@@ -1,10 +1,68 @@
 const client = require('./client')
 
 
-async function caughtMon(pokemonId){
+async function createDex(userId){
     try {
-        
+        const {rows: [dex]} = await client.query(`
+            INSERT INTO fodder("userId")
+            VALUES ($1)
+            RETURNING *;
+        `, [userId])
+        return dex
     } catch (error) {
         console.log(error)
     }
+}
+
+
+async function joinFod(userId){
+    try {
+        const {rows: [dex]} = await client.query(`
+            SELECT *
+            FROM fodder
+            WHERE "userId"=$1;
+        `, [userId])
+        // console.log('this is dex', dex)
+        // return dex
+
+        const {rows: pokemon} = await client.query(`
+           SELECT *
+           FROM pokemon
+           INNER JOIN pokedex
+           ON pokemon.id = pokedex."pokemonId"
+           WHERE pokedex."dexId" = $1
+        `,[dex.dexId] )
+        return pokemon
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function caughtPokemon({dexId, userId, pokemonId, natId}){
+    try {
+        const {rows: [pokemon]} = await client.query(`
+            INSERT INTO pokedex("dexId", "userId", "pokemonId", "natId")
+            VALUES ($1, $2, $3, $4)
+            RETURNING *;
+        `, [dexId, userId, pokemonId, natId])
+        return pokemon
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function checkDex(){
+    try {
+        const {rows} = await client.query(`
+            
+        `)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports ={ 
+    createDex,
+    joinFod,
+    caughtPokemon
 }

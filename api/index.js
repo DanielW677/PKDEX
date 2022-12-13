@@ -45,5 +45,8 @@ router.use(async (req, res, next) => {
 
   const monRouter = require('./pokemon')
   router.use('/pokemon', monRouter)
+
+  const dexRouter = require('./pokedex')
+  router.use('/pokedex', dexRouter)
   
   module.exports = router

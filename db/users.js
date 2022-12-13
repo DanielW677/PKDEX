@@ -51,9 +51,22 @@ async function getUserById(userId){
     }
 }
 
+async function getMyMons(userId){
+    try {
+        const {rows} = await client.query(`
+            SELECT *
+            FROM pokedex
+            WHERE "userId"=$1
+        `, [userId])
+        return rows
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 module.exports = {
     createUser,
     getUserByUsername,
-    getUserById
+    getUserById,
+    getMyMons
 }

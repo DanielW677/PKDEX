@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const {reqUser, reqAdmin} = require('./utils')
 const {JWT_SECRET} = process.env
-
+const {createDex} = require('../db/pokedex')
 usersRouter.post('/register', async (req, res, next) => {
     const {username, password} = req.body
     try {

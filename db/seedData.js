@@ -1,13 +1,14 @@
 const client = require('./client')
-const {createUser, getUserByUsername } = require('./users')
+const {createUser, getUserByUsername, getMyMons } = require('./users')
 const {newPokemon, getAllMons} = require('./pokemon')
-
+const {joinFod, createDex, caughtPokemon} = require('./pokedex')
 async function dropTables(){
     console.log('Starting to drop all tables')
     try {
         await client.query(`
-            DROP TABLE IF EXISTS pokemon;
             DROP TABLE IF EXISTS pokedex;
+            DROP TABLE IF EXISTS fodder;
+            DROP TABLE IF EXISTS pokemon;
             DROP TABLE IF EXISTS users;
         `)
         console.log('Done dropping tables')
@@ -29,15 +30,22 @@ async function makeTables(){
             );
             CREATE TABLE pokemon(
                 id SERIAL PRIMARY KEY,
-                "PKName" VARCHAR(255) NOT NULL,
+                "PKName" VARCHAR(255) NOT NULL UNIQUE,
                 type VARCHAR(255),
                 photo TEXT,
                 "ShinyPhoto" TEXT,
-                "DexId" INTEGER NOT NULL
+                "DexId" INTEGER NOT NULL UNIQUE
+            );
+            CREATE TABLE fodder(
+                "dexId" SERIAL PRIMARY KEY,
+                "userId" INTEGER REFERENCES users("id")
             );
             CREATE TABLE pokedex(
                 id SERIAL PRIMARY KEY,
-                "userId" INTEGER REFERENCES users("id")
+                "dexId" INTEGER REFERENCES fodder("dexId"),
+                "userId" INTEGER REFERENCES users("id"),
+                "pokemonId" INTEGER REFERENCES pokemon("id"),
+                "natId" INTEGER REFERENCES pokemon("DexId")
             );
         `)
     } catch (error) {
@@ -148,15 +156,56 @@ async function firstMons(){
         console.log(error)
     }
 }
-
-async function test(){
+async function dex(){
     try {
-        const user = await getAllMons()
-        console.log(user)
+        const dee = await createDex(1)
+        const dee2 = await createDex(2)
+        console.log(dee)
     } catch (error) {
         console.log(error)
     }
 }
+async function initalMonsCaught(){
+    console.log('Starting to catch em all')
+    try {
+        const monToCatch = [
+            {
+                dexId: 1,
+                userId: 1,
+                pokemonId: 4,
+                natId: 909
+            },
+            {
+                dexId: 1,
+                userId: 1,
+                pokemonId: 3,
+                natId: 908
+            },
+            {
+                dexId: 2,
+                userId: 2,
+                pokemonId: 3,
+                natId: 908
+            }
+        ]
+        const monCaught = await Promise.all(monToCatch.map(caughtPokemon))
+        console.log('Caught some of em')
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function monsCheck(){
+    console.log('starting to get mons')
+    try {
+        const mons = await joinFod(1)
+        console.log(mons)
+        console.log('got mons')
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 async function rebuildDB(){
     try {
@@ -165,6 +214,9 @@ async function rebuildDB(){
         await makeTables()
         await firstUsers()
         await firstMons()
+        await dex()
+        await initalMonsCaught()
+        await monsCheck()
         // await test()
     } catch (error) {
         console.log(error)
