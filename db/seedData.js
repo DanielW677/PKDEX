@@ -1,6 +1,6 @@
 const client = require('./client')
 const {createUser, getUserByUsername, getMyMons } = require('./users')
-const {newPokemon, getAllMons} = require('./pokemon')
+const {newPokemon, getAllMons, getMonByNatId, getMonByLocId} = require('./pokemon')
 const {joinFod, createDex, caughtPokemon} = require('./pokedex')
 async function dropTables(){
     console.log('Starting to drop all tables')
@@ -198,7 +198,7 @@ async function initalMonsCaught(){
 async function monsCheck(){
     console.log('starting to get mons')
     try {
-        const mons = await joinFod(1)
+        const mons = await getMonByLocId(7)
         console.log(mons)
         console.log('got mons')
     } catch (error) {

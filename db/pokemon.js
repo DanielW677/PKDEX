@@ -26,7 +26,43 @@ async function getAllMons(){
         console.log(error)
     }
 }
+
+async function getMonByNatId(natId){
+    try {
+        const {rows} = await client.query(`
+            SELECT *
+            FROM pokemon
+            WHERE "DexId"=$1;
+        `, [natId])
+        return rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function getMonByLocId(localId){
+    try {
+        const {rows: [pokemon]} = await client.query(`
+            SELECT *
+            FROM pokemon
+            WHERE id=$1;
+        `, [localId])
+        return pokemon
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+// async function getDataByname(pokName){
+//     try {
+//         const {row}
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
 module.exports = {
     newPokemon,
-    getAllMons
+    getAllMons,
+    getMonByNatId,
+    getMonByLocId
 }

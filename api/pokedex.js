@@ -1,8 +1,10 @@
 const express = require('express')
+const client = require('../db/client')
 const dexRouter = express.Router()
-const {createDex, joinFod, caughtPokemon} = require('../db/pokedex')
+const {createDex, joinFod, caughtPokemon, getDexById} = require('../db/pokedex')
 const {getMyMons} = require('../db/users')
 const {reqUser} = require('./utils')
+const {getMonByNatId, getMonByLocId} = require('../db/pokemon')
 
 dexRouter.get('/viewmons', reqUser, async  (req, res, next) => {
     const userId = req.user.id
@@ -21,6 +23,38 @@ dexRouter.get('/viewmons', reqUser, async  (req, res, next) => {
     } catch (error) {
         console.log(error)
     }
+})
+
+dexRouter.post('/add/:pokemonid', reqUser, async (req, res, next) => {
+    const {pokemonid} = req.params
+    const userId = req.user.id
+    const pokeData = {}
+    try {
+        pokeData.pokemonId = pokemonid
+            // console.log(pokemonid)
+        const dexId = await getDexById(userId)
+            // console.log(dexId)
+        pokeData.dexId = dexId.dexId
+            // console.log('this is dexID', dexId.dexId)
+        pokeData.userId = userId
+            // console.log(userId)
+        const pokemon = await getMonByLocId(pokemonid)
+            // console.log('this is nat', pokemon.DexId)
+        pokeData.natId = pokemon.DexId
+        const addToDex = await caughtPokemon(pokeData)
+        console.log(addToDex)
+        if(addToDex){
+            res.send(addToDex)
+        }else{
+            res.send({
+                name: "FailedToAddToCart",
+                message: "Something went wrong adding to pokedex. Sorry"
+            })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+    
 })
 
 

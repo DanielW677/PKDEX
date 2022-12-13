@@ -61,8 +61,22 @@ async function checkDex(){
     }
 }
 
+async function getDexById(dexId){
+    try {
+        const {rows: [pokedex]} = await client.query(`
+            SELECT *
+            FROM pokedex
+            WHERE "dexId"=$1
+        `, [dexId])
+        return pokedex
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports ={ 
     createDex,
     joinFod,
-    caughtPokemon
+    caughtPokemon,
+    getDexById
 }
