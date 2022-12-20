@@ -1,6 +1,6 @@
 const client = require('./client')
 const bcrypt = require('bcrypt')
-
+const {createDex} = require('./pokedex')
 
 async function createUser({username, password, isAdmin}){
     const hashWord = await bcrypt.hash(password, 10)
@@ -10,8 +10,10 @@ async function createUser({username, password, isAdmin}){
             VALUES ($1, $2, $3)
             RETURNING *;
         `, [username, hashWord, isAdmin])
-        // console.log(user)
-        return user
+        console.log(user)
+        const userId = user.id
+        await createDex(userId)
+            return user
     } catch (error) {
         console.log(error)
     }

@@ -31,11 +31,12 @@ dexRouter.post('/add/:pokemonid', reqUser, async (req, res, next) => {
     const pokeData = {}
     try {
         pokeData.pokemonId = pokemonid
-            // console.log(pokemonid)
+            // console.log('monid', pokemonid) //Coming through correctly
         const dexId = await getDexById(userId)
-            // console.log(dexId)
+            // console.log('this is userid', userId)
+            console.log('dexid', dexId)
         pokeData.dexId = dexId.dexId
-            // console.log('this is dexID', dexId.dexId)
+            console.log('this is dexID', dexId.dexId)
         pokeData.userId = userId
             // console.log(userId)
         const pokemon = await getMonByLocId(pokemonid)

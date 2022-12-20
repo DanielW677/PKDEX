@@ -65,7 +65,7 @@ async function getDexById(dexId){
     try {
         const {rows: [pokedex]} = await client.query(`
             SELECT *
-            FROM pokedex
+            FROM fodder
             WHERE "dexId"=$1
         `, [dexId])
         return pokedex

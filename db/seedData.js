@@ -214,7 +214,7 @@ async function rebuildDB(){
         await makeTables()
         await firstUsers()
         await firstMons()
-        await dex()
+        // await dex()
         await initalMonsCaught()
         await monsCheck()
         // await test()
