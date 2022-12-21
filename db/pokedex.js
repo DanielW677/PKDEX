@@ -74,9 +74,22 @@ async function getDexById(dexId){
     }
 }
 
+async function removeMon(pokemonId, userId){
+    try {
+        const rows = await client.query(`
+           DELETE FROM "pokedex"
+           WHERE "natId"=$1 AND "userId"=$2
+        `, [pokemonId, userId])
+        return rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports ={ 
     createDex,
     joinFod,
     caughtPokemon,
-    getDexById
+    getDexById,
+    removeMon
 }

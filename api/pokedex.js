@@ -1,7 +1,7 @@
 const express = require('express')
 const client = require('../db/client')
 const dexRouter = express.Router()
-const {createDex, joinFod, caughtPokemon, getDexById} = require('../db/pokedex')
+const {createDex, joinFod, caughtPokemon, getDexById, removeMon} = require('../db/pokedex')
 const {getMyMons} = require('../db/users')
 const {reqUser} = require('./utils')
 const {getMonByNatId, getMonByLocId} = require('../db/pokemon')
@@ -58,5 +58,18 @@ dexRouter.post('/add/:pokemonid', reqUser, async (req, res, next) => {
     
 })
 
+dexRouter.delete('/delete/:pokemonid', reqUser, async (req,res,next) => {
+    const {pokemonid} = req.params
+    console.log('pokeid', pokemonid)
+    const userId = req.user.id
+    console.log('this is my user', userId)
+    try {
+        const result = await removeMon(pokemonid, userId)
+        console.log('this is result', result)
+        res.send({message: "pokemon deleted"})
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 module.exports = dexRouter
