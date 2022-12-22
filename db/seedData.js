@@ -2,10 +2,14 @@ const client = require('./client')
 const {createUser, getUserByUsername, getMyMons } = require('./users')
 const {newPokemon, getAllMons, getMonByNatId, getMonByLocId} = require('./pokemon')
 const {joinFod, createDex, caughtPokemon} = require('./pokedex')
+const {addToHunt, createHunt} = require('./hunt')
+
 async function dropTables(){
     console.log('Starting to drop all tables')
     try {
         await client.query(`
+            DROP TABLE IF EXISTS huntnext;
+            DROP TABLE IF EXISTS huntdata;
             DROP TABLE IF EXISTS pokedex;
             DROP TABLE IF EXISTS fodder;
             DROP TABLE IF EXISTS pokemon;
@@ -43,6 +47,17 @@ async function makeTables(){
             CREATE TABLE pokedex(
                 id SERIAL PRIMARY KEY,
                 "dexId" INTEGER REFERENCES fodder("dexId"),
+                "userId" INTEGER REFERENCES users("id"),
+                "pokemonId" INTEGER REFERENCES pokemon("id"),
+                "natId" INTEGER REFERENCES pokemon("DexId")
+            );
+            CREATE TABLE huntdata(
+                "huntId" SERIAL PRIMARY KEY,
+                "userId" INTEGER REFERENCES users("id")
+            );
+            CREATE TABLE huntnext(
+                id SERIAL PRIMARY KEY,
+                "huntId" SERIAL REFERENCES huntdata,
                 "userId" INTEGER REFERENCES users("id"),
                 "pokemonId" INTEGER REFERENCES pokemon("id"),
                 "natId" INTEGER REFERENCES pokemon("DexId")
@@ -195,6 +210,43 @@ async function initalMonsCaught(){
     }
 }
 
+async function hunt(){
+    try {
+        const hunt1 = await createHunt(1)
+        const hunt2 = await createHunt(2)
+        const hunt3 = await createHunt(3)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function initalHunt(){
+    console.log('Starting to hunt mons')
+    try {
+        const monToHunt = [
+            {
+                userId: 1,
+                pokemonId: 3,
+                natId: 908
+            },
+            {
+                userId: 2,
+                pokemonId: 4,
+                natId: 909
+            },
+            {
+                userId: 3,
+                pokemonId: 5,
+                natId: 910
+            }
+        ]
+        const monHunt = await Promise.all(monToHunt.map(addToHunt))
+        console.log('Caught some of em')
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 async function monsCheck(){
     console.log('starting to get mons')
     try {
@@ -215,6 +267,8 @@ async function rebuildDB(){
         await firstUsers()
         await firstMons()
         // await dex()
+        await hunt()
+        await initalHunt()
         await initalMonsCaught()
         await monsCheck()
         // await test()

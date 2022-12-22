@@ -57,7 +57,6 @@ dexRouter.post('/add/:pokemonid', reqUser, async (req, res, next) => {
     }
     
 })
-
 dexRouter.delete('/delete/:pokemonid', reqUser, async (req,res,next) => {
     const {pokemonid} = req.params
     console.log('pokeid', pokemonid)
