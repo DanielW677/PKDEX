@@ -1,6 +1,6 @@
 const client = require('./client')
 const {createUser, getUserByUsername, getMyMons } = require('./users')
-const {newPokemon, getAllMons, getMonByNatId, getMonByLocId} = require('./pokemon')
+const {newPokemon, getAllMons, getMonByNatId, getMonByLocId, deleteMon} = require('./pokemon')
 const {joinFod, createDex, caughtPokemon} = require('./pokedex')
 const {addToHunt, createHunt} = require('./hunt')
 
@@ -250,7 +250,7 @@ async function initalHunt(){
 async function monsCheck(){
     console.log('starting to get mons')
     try {
-        const mons = await getMonByLocId(7)
+        const mons = await deleteMon(914)
         console.log(mons)
         console.log('got mons')
     } catch (error) {
@@ -270,7 +270,7 @@ async function rebuildDB(){
         await hunt()
         await initalHunt()
         await initalMonsCaught()
-        await monsCheck()
+        // await monsCheck()
         // await test()
     } catch (error) {
         console.log(error)

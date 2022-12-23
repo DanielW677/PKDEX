@@ -53,6 +53,18 @@ async function getMonByLocId(localId){
     }
 }
 
+async function deleteMon(DexId){
+    try {
+        const result = await client.query(`
+            DELETE FROM pokemon
+            WHERE "DexId"=$1
+        `, [DexId])
+        return result
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 // async function getDataByname(pokName){
 //     try {
 //         const {row}
@@ -64,5 +76,6 @@ module.exports = {
     newPokemon,
     getAllMons,
     getMonByNatId,
-    getMonByLocId
+    getMonByLocId,
+    deleteMon
 }

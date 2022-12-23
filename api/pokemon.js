@@ -1,6 +1,6 @@
 const express = require('express')
 const monRouter = express.Router()
-const {getAllMons, newPokemon} = require('../db/pokemon')
+const {getAllMons, newPokemon, deleteMon} = require('../db/pokemon')
 const {reqAdmin} = require('../api/utils')
 monRouter.get('/', async (req,res,next) => {
     try {
@@ -25,6 +25,22 @@ monRouter.post('/newmon', reqAdmin, async (req, res, next) => {
             res.send({newPoke})
         }else{
             res.send({message: "failed to create pokemon"})
+        }
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+monRouter.delete('/deletemon/:pokemonid', reqAdmin, async (req, res) => {
+    const {pokemonid} = req.params
+    // console.log(pokemonid)
+
+    try {
+        const delMon = await deleteMon(pokemonid)
+        if(delMon){
+            res.send({message: "pokemon Deleted"})
+        }else{
+            res.send({message: "Failed to delet pokemon"})
         }
     } catch (error) {
         console.log(error)
